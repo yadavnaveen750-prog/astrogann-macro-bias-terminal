@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroGann Automated Intelligence Terminal</title>
+    <style>
+        :root {
+            --bg-base: #080b11;
+            --bg-card: #0f1523;
+            --bg-card-sub: #151d30;
+            --border: #222d42;
+            --border-highlight: #3b82f6;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bullish: #10b981;
+            --bullish-bg: rgba(16, 185, 129, 0.12);
+            --bearish: #ef4444;
+            --bearish-bg: rgba(239, 68, 68, 0.12);
+            --neutral: #f59e0b;
+            --neutral-bg: rgba(245, 158, 11, 0.12);
+            --accent: #38bdf8;
+            --accent-purple: #c084fc;
+            --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, Menlo, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .date-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent);
+            background: #1e293b;
+        }
+
+        input[type="date"] {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--accent);
+        }
+
+        .ephemeris-strip {
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        .strip-label {
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .planet-node {
+            display: inline-flex;
+            gap: 5px;
+            background: var(--bg-base);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .planet-node span.val { color: #38bdf8; font-weight: 600; }
+
+        .impact-panel {
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .impact-panel.has-shock {
+            border-left-color: var(--bearish);
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card) 100%);
+        }
+
+        .impact-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .impact-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.88rem;
+        }
+
+        .impact-list li::before {
+            content: "⚡ ";
+            color: var(--accent);
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+        }
+
+        .asset-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+        }
+
+        .asset-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .asset-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .asset-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .bias-pill {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 5px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .bullish-pill { background: var(--bullish); color: #000; }
+        .mild-bull-pill { background: var(--bullish-bg); color: var(--bullish); border: 1px solid var(--bullish); }
+        .sideways-pill { background: var(--neutral-bg); color: var(--neutral); border: 1px solid var(--neutral); }
+        .mild-bear-pill { background: var(--bearish-bg); color: var(--bearish); border: 1px solid var(--bearish); }
+        .bearish-pill { background: var(--bearish); color: #fff; }
+
+        .score-bar {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .score-num { font-size: 1.1rem; font-weight: 800; }
+
+        .pillar-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+        }
+
+        .pillar-box {
+            background: var(--bg-card-sub);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .pillar-label { color: var(--text-muted); font-size: 0.7rem; display: block; }
+        .pillar-val { font-weight: 600; }
+
+        .card-desc {
+            font-size: 0.82rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--border-highlight);
+            padding: 8px 10px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.4;
+        }
+
+        .gann-workspace {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 980px) {
+            .gann-workspace { grid-template-columns: 1fr; }
+        }
+
+        .panel-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px;
+        }
+
+        .panel-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .panel-header span {
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            color: var(--accent);
+            font-weight: normal;
+        }
+
+        .gann-selectors {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .asset-btn {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .asset-btn.active {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .base-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .base-input-row input {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 140px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .gann-octave-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+        }
+
+        .gann-octave-table th {
+            text-align: left;
+            background: var(--bg-base);
+            padding: 8px 12px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .gann-octave-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .octave-label { color: var(--accent); font-weight: 600; }
+        .octave-res { color: #f87171; font-weight: 700; }
+        .octave-sup { color: #34d399; font-weight: 700; }
+        .octave-pivot { color: #fbbf24; font-weight: 800; font-size: 0.95rem; }
+
+        .gann-guide {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: var(--text-muted);
+        }
+
+        .guide-card {
+            background: var(--bg-card-sub);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 14px;
+        }
+
+        .guide-card strong {
+            color: #fff;
+            font-size: 0.88rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .guide-card strong span {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .top-bar, .panel-box { padding: 12px; }
+            .asset-grid { grid-template-columns: 1fr; }
+            .gann-octave-table th, .gann-octave-table td { padding: 6px 8px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="top-bar">
+        <div class="brand-title">
+            ⭐ AstroGann Terminal
+            <span class="brand-badge">Autonomous Analysis Engine</span>
+        </div>
+        <div class="date-controls">
+            <button class="nav-btn" onclick="shiftDate(-1)">◄ Prev Day</button>
+            <input type="date" id="target-date" onchange="runAnalysis()">
+            <button class="nav-btn" onclick="shiftDate(1)">Next Day ►</button>
+            <button class="nav-btn" onclick="resetToday()">Today</button>
+        </div>
+    </header>
+
+    <div class="ephemeris-strip" id="ephemeris-bar">Loading...</div>
+
+    <div class="impact-panel" id="impact-box">
+        <div class="impact-title" id="impact-header">Analyzing Planetary Aspects...</div>
+        <ul class="impact-list" id="impact-events"></ul>
+    </div>
+
+    <div class="asset-grid" id="asset-cards-grid"></div>
+
+    <div class="gann-workspace">
+
+        <div class="panel-box">
+            <div class="panel-header">
+                Automated Gann Square of 9 Harmonics
+                <span id="gann-selected-name">Gold (XAU/USD)</span>
+            </div>
+
+            <div class="gann-selectors">
+                <button class="asset-btn active" onclick="switchGannAsset(event, 'gold', 2650)">Gold (XAU)</button>
+                <button class="asset-btn" onclick="switchGannAsset(event, 'btc', 65000)">Bitcoin (BTC)</button>
+                <button class="asset-btn" onclick="switchGannAsset(event, 'oil', 75.50)">US Oil (WTI)</button>
+                <button class="asset-btn" onclick="switchGannAsset(event, 'nifty', 25200)">Nifty 50</button>
+            </div>
+
+            <div class="base-input-row">
+                <label for="base-price">Reference Base Price:</label>
+                <input type="number" id="base-price" step="any" oninput="calculateGannGrid()" value="2650">
+                <span style="color: var(--text-muted); font-size: 0.75rem; flex: 1;">(Auto-preset; edit anytime to match your entry)</span>
+            </div>
+
+            <table class="gann-octave-table">
+                <thead>
+                    <tr>
+                        <th>Gann Degree</th>
+                        <th>Function</th>
+                        <th>Harmonic Price</th>
+                        <th>Action Protocol</th>
+                    </tr>
+                </thead>
+                <tbody id="gann-table-body"></tbody>
+            </table>
+        </div>
+
+        <div class="panel-box">
+            <div class="panel-header">
+                Gann Decoded
+                <span>Beginner's Plain-English Guide</span>
+            </div>
+
+            <div class="gann-guide">
+                <div class="guide-card">
+                    <strong>1. What is the <span>Square of 9</span>?</strong>
+                    W.D. Gann discovered that prices do not move linearly—they expand in spirals, exactly like planetary orbits. The Square of 9 maps price vibrations onto a 360° circle. When a price reaches a geometric angle (like 90° or 180°), it completes a mathematical circuit and tends to bounce or reverse.
+                </div>
+
+                <div class="guide-card">
+                    <strong>2. What does <span>90° (The Square)</span> mean?</strong>
+                    The 90° angle represents maximum structural resistance or support. In trading, if price is rallying, <strong>+90°</strong> is your primary profit target or exhaustion pivot. If price breaks through +90° with high volume, it signals momentum expansion toward 180°.
+                </div>
+
+                <div class="guide-card">
+                    <strong>3. What does <span>180° (The Opposition)</span> mean?</strong>
+                    180° is the exact polar opposite of your starting price on the wheel. It is the most powerful cycle exhaustion target. Trends that run into a 180° Gann octave without resting almost always experience sharp intraday rejections.
+                </div>
+
+                <div class="guide-card">
+                    <strong>4. What does <span>45° (The Octave)</span> mean?</strong>
+                    45° is an intermediate half-step. In aggressive trending markets, pullbacks will often hold cleanly right at the <strong>-45°</strong> or <strong>+45°</strong> line, allowing low-risk trend re-entries.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const NAKSHATRAS = [
+        "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+        "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+        "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+        "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+        "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+    ];
+
+    const ZODIAC = [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ];
+
+    const VARAS = [
+        { name: "Sunday", lord: "Sun", rulerOf: "Gold & PSUs" },
+        { name: "Monday", lord: "Moon", rulerOf: "Silver & FMCG" },
+        { name: "Tuesday", lord: "Mars", rulerOf: "Crude Oil & Defense" },
+        { name: "Wednesday", lord: "Mercury", rulerOf: "Nifty & Bitcoin" },
+        { name: "Thursday", lord: "Jupiter", rulerOf: "Banking & Bullion" },
+        { name: "Friday", lord: "Venus", rulerOf: "Crypto & Consumption" },
+        { name: "Saturday", lord: "Saturn", rulerOf: "Crude & Infrastructure" }
+    ];
+
+    function calculateEphemeris(targetDate) {
+        const jd = (targetDate.getTime() / 86400000) + 2440587.5;
+        const T = (jd - 2451545.0) / 36525.0;
+        const ayanamsha = 23.85 + (targetDate.getFullYear() - 2000) * 0.01397;
+        const toSidereal = (deg) => {
+            let s = (deg - ayanamsha) % 360;
+            return s < 0 ? s + 360 : s;
+        };
+
+        const L0 = 280.46646 + 36000.76983 * T;
+        const M_sun = (357.52911 + 35999.05029 * T) * (Math.PI / 180);
+        const C_sun = (1.914602 - 0.004817 * T) * Math.sin(M_sun) + 0.02 * Math.sin(2 * M_sun);
+        const sunSidereal = toSidereal(L0 + C_sun);
+
+        const L_moon = 218.3165 + 481267.8813 * T;
+        const M_moon = (134.9634 + 477198.8675 * T) * (Math.PI / 180);
+        const C_moon = 6.289 * Math.sin(M_moon);
+        const moonSidereal = toSidereal(L_moon + C_moon);
+
+        const L_mars = 355.43 + 19140.30 * T;
+        const marsSidereal = toSidereal(L_mars + 10.69 * Math.sin((19.37 + 19139.85 * T) * Math.PI / 180));
+
+        const L_merc = 252.25 + 149472.67 * T;
+        const mercSidereal = toSidereal(L_merc + 6.0 * Math.sin((174.79 + 149474.07 * T) * Math.PI / 180));
+
+        const L_jup = 34.35 + 3034.90 * T;
+        const jupSidereal = toSidereal(L_jup + 5.55 * Math.sin((20.02 + 3034.69 * T) * Math.PI / 180));
+
+        const L_sat = 50.08 + 1222.11 * T;
+        const satSidereal = toSidereal(L_sat + 6.36 * Math.sin((317.02 + 1221.55 * T) * Math.PI / 180));
+
+        const rahuSidereal = toSidereal(125.04452 - 1934.136261 * T);
+
+        const getSign = (deg) => ZODIAC[Math.floor(deg / 30)];
+        const getNakshatra = (deg) => NAKSHATRAS[Math.floor((deg % 360) / (360 / 27))];
+
+        return {
+            sun: { deg: sunSidereal, sign: getSign(sunSidereal), nakshatra: getNakshatra(sunSidereal) },
+            moon: { deg: moonSidereal, sign: getSign(moonSidereal), nakshatra: getNakshatra(moonSidereal) },
+            mars: { deg: marsSidereal, sign: getSign(marsSidereal), nakshatra: getNakshatra(marsSidereal) },
+            mercury: { deg: mercSidereal, sign: getSign(mercSidereal), nakshatra: getNakshatra(mercSidereal) },
+            jupiter: { deg: jupSidereal, sign: getSign(jupSidereal), nakshatra: getNakshatra(jupSidereal) },
+            saturn: { deg: satSidereal, sign: getSign(satSidereal), nakshatra: getNakshatra(satSidereal) },
+            rahu: { deg: rahuSidereal, sign: getSign(rahuSidereal), nakshatra: getNakshatra(rahuSidereal) }
+        };
+    }
+
+    function getAspectAngle(deg1, deg2) {
+        let diff = Math.abs(deg1 - deg2) % 360;
+        return diff > 180 ? 360 - diff : diff;
+    }
+
+    function evaluatePillars(eph, dayLordIndex) {
+        const events = [];
+        let hasShock = false;
+
+        const marsSatDiff = getAspectAngle(eph.mars.deg, eph.saturn.deg);
+        let oilAspectScore = 0;
+        if (Math.abs(marsSatDiff - 90) <= 6 || Math.abs(marsSatDiff - 180) <= 6 || marsSatDiff <= 6) {
+            events.push(`<strong>Mars–Saturn High Friction (${marsSatDiff.toFixed(1)}°):</strong> Severe geopolitical stress signature. Triggers explosive risk premiums in US Crude Oil.`);
+            oilAspectScore = -1.8;
+            hasShock = true;
+        } else if (Math.abs(marsSatDiff - 120) <= 6 || Math.abs(marsSatDiff - 60) <= 6) {
+            events.push(`<strong>Mars–Saturn Trine/Sextile:</strong> Harmonious industrial flow. Steady demand for Oil without sudden panic.`);
+            oilAspectScore = 1.0;
+        }
+
+        const rahuMercDiff = getAspectAngle(eph.mercury.deg, eph.rahu.deg);
+        let btcAspectScore = 0;
+        if (rahuMercDiff <= 7 || Math.abs(rahuMercDiff - 180) <= 7) {
+            events.push(`<strong>Rahu–Mercury Conjunction/Opposition:</strong> Algorithmic ignition trigger. Induces severe whipsaws and stop-hunts across Bitcoin.`);
+            btcAspectScore = -1.2;
+            hasShock = true;
+        } else if (Math.abs(rahuMercDiff - 120) <= 6) {
+            events.push(`<strong>Rahu–Mercury Harmonious Angle:</strong> Smooth speculative expansion supporting crypto breakouts.`);
+            btcAspectScore = 1.2;
+        }
+
+        const sunJupDiff = getAspectAngle(eph.sun.deg, eph.jupiter.deg);
+        let goldAspectScore = 0.5;
+        if (Math.abs(sunJupDiff - 120) <= 7 || sunJupDiff <= 7) {
+            events.push(`<strong>Sun–Jupiter Royal Harmonic:</strong> Sovereign institutional liquidity flow into Gold and Nifty 50.`);
+            goldAspectScore = 1.6;
+        }
+
+        const getSunDignity = (sign) => sign === "Aries" ? 2.0 : sign === "Leo" ? 1.8 : sign === "Libra" ? -1.8 : 0.4;
+        const getJupDignity = (sign) => sign === "Cancer" ? 2.0 : (sign === "Sagittarius" || sign === "Pisces") ? 1.5 : sign === "Capricorn" ? -1.8 : 0.5;
+        const getMarsDignity = (sign) => sign === "Capricorn" ? 2.0 : (sign === "Aries" || sign === "Scorpio") ? 1.5 : sign === "Cancer" ? -1.8 : 0.0;
+        const getMercDignity = (sign) => sign === "Virgo" ? 2.0 : sign === "Gemini" ? 1.5 : sign === "Pisces" ? -1.8 : 0.2;
+        const getSatDignity = (sign) => sign === "Libra" ? 2.0 : (sign === "Capricorn" || sign === "Aquarius") ? 1.5 : sign === "Aries" ? -1.8 : 0.2;
+
+        const dayName = VARAS[dayLordIndex].lord;
+        const isGoldDay = (dayName === "Sun" || dayName === "Jupiter");
+        const isOilDay = (dayName === "Mars" || dayName === "Saturn");
+        const isBtcDay = (dayName === "Mercury" || dayName === "Venus");
+        const isNiftyDay = (dayName === "Mercury" || dayName === "Jupiter");
+
+        const goldScore = (0.30 * getSunDignity(eph.sun.sign)) + (0.30 * goldAspectScore) + (0.25 * getJupDignity(eph.jupiter.sign)) + (0.15 * (isGoldDay ? 1.0 : 0.0));
+        const btcScore = (0.30 * getMercDignity(eph.mercury.sign)) + (0.30 * btcAspectScore) + (0.25 * 0.2) + (0.15 * (isBtcDay ? 1.0 : -0.2));
+        const oilScore = (0.30 * getSatDignity(eph.saturn.sign)) + (0.30 * oilAspectScore) + (0.25 * getMarsDignity(eph.mars.sign)) + (0.15 * (isOilDay ? 0.8 : -0.3));
+        const niftyScore = (0.30 * getMercDignity(eph.mercury.sign)) + (0.30 * (sunJupDiff < 60 ? 1.2 : 0.2)) + (0.25 * getJupDignity(eph.jupiter.sign)) + (0.15 * (isNiftyDay ? 1.0 : 0.1));
+
+        if (events.length === 0) {
+            events.push(`<strong>Harmonic Order:</strong> No destructive planetary friction angles active. Markets follow standard technical order flow.`);
+        }
+
+        return {
+            events,
+            hasShock,
+            scores: {
+                gold: {
+                    score: goldScore,
+                    p1: getSunDignity(eph.sun.sign),
+                    p2: goldAspectScore,
+                    p3: getJupDignity(eph.jupiter.sign),
+                    p4: isGoldDay ? 1.0 : 0.0,
+                    desc: `Sun in ${eph.sun.sign} (${eph.sun.nakshatra}). Moon in ${eph.moon.sign}. Institutional wealth preservation active.`
+                },
+                btc: {
+                    score: btcScore,
+                    p1: getMercDignity(eph.mercury.sign),
+                    p2: btcAspectScore,
+                    p3: 0.2,
+                    p4: isBtcDay ? 1.0 : -0.2,
+                    desc: `Mercury in ${eph.mercury.sign}. Rahu distance: ${rahuMercDiff.toFixed(1)}°. Scalp liquidity; beware of wick manipulations.`
+                },
+                oil: {
+                    score: oilScore,
+                    p1: getSatDignity(eph.saturn.sign),
+                    p2: oilAspectScore,
+                    p3: getMarsDignity(eph.mars.sign),
+                    p4: isOilDay ? 0.8 : -0.3,
+                    desc: `Mars in ${eph.mars.sign} vs Saturn in ${eph.saturn.sign}. Industrial momentum balanced by macro supply friction.`
+                },
+                nifty: {
+                    score: niftyScore,
+                    p1: getMercDignity(eph.mercury.sign),
+                    p2: (sunJupDiff < 60 ? 1.2 : 0.2),
+                    p3: getJupDignity(eph.jupiter.sign),
+                    p4: isNiftyDay ? 1.0 : 0.1,
+                    desc: `Jupiter in ${eph.jupiter.sign} anchors credit. Sentiment governed by Moon in ${eph.moon.nakshatra}.`
+                }
+            }
+        };
+    }
+
+    let currentGannAsset = "gold";
+    const defaultPrices = { gold: 2650, btc: 65000, oil: 75.50, nifty: 25200 };
+
+    function getGannLevels(basePrice) {
+        const sqrtP = Math.sqrt(basePrice);
+        const calcPlus = (deg) => Math.pow(sqrtP + (deg / 180), 2).toFixed(2);
+        const calcMinus = (deg) => {
+            let v = sqrtP - (deg / 180);
+            return v > 0 ? Math.pow(v, 2).toFixed(2) : "0.00";
+        };
+
+        return [
+            { deg: "+180°", func: "Major Cycle Target", price: calcPlus(180), type: "res", desc: "Take heavy profit / watch for reversal" },
+            { deg: "+120°", func: "Trine Expansion", price: calcPlus(120), type: "res", desc: "Strong trend runner target" },
+            { deg: "+90°",  func: "Square Resistance", price: calcPlus(90), type: "res", desc: "Lock partial profits" },
+            { deg: "+45°",  func: "First Octave Support", price: calcPlus(45), type: "res", desc: "Intraday test zone" },
+            { deg: "0°",    func: "Base Harmonic", price: basePrice.toFixed(2), type: "pivot", desc: "Session median" },
+            { deg: "-45°",  func: "First Octave Support", price: calcMinus(45), type: "sup", desc: "Aggressive buy rebound" },
+            { deg: "-90°",  func: "Square Support", price: calcMinus(90), type: "sup", desc: "Institutional absorption" },
+            { deg: "-120°", func: "Trine Floor", price: calcMinus(120), type: "sup", desc: "Deep value buying" },
+            { deg: "-180°", func: "Cycle Breakdown", price: calcMinus(180), type: "sup", desc: "Extreme exhaustion" }
+        ];
+    }
+
+    function switchGannAsset(event, key, defaultP) {
+        currentGannAsset = key;
+        document.querySelectorAll('.asset-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const names = { gold: "Gold (XAU/USD)", btc: "Bitcoin (BTC/USD)", oil: "US Crude Oil (WTI)", nifty: "Nifty 50 Index" };
+        document.getElementById('gann-selected-name').innerText = names[key];
+        document.getElementById('base-price').value = defaultP;
+        calculateGannGrid();
+    }
+
+    function calculateGannGrid() {
+        const p = parseFloat(document.getElementById('base-price').value);
+        if (isNaN(p) || p <= 0) return;
+
+        const levels = getGannLevels(p);
+        const tbody = document.getElementById('gann-table-body');
+        tbody.innerHTML = '';
+
+        levels.forEach(lvl => {
+            const tr = document.createElement('tr');
+            let colorClass = lvl.type === "res" ? "octave-res" : lvl.type === "sup" ? "octave-sup" : "octave-pivot";
+            tr.innerHTML = `
+                <td class="octave-label">${lvl.deg}</td>
+                <td>${lvl.func}</td>
+                <td class="${colorClass}">${lvl.price}</td>
+                <td style="color: var(--text-muted); font-size: 0.78rem;">${lvl.desc}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function getBiasBadge(score) {
+        if (score >= 1.2) return { text: "STRONG BULL", cls: "bullish-pill" };
+        if (score >= 0.3) return { text: "MILD BULL", cls: "mild-bull-pill" };
+        if (score > -0.3) return { text: "SIDEWAYS", cls: "sideways-pill" };
+        if (score >= -1.2) return { text: "MILD BEAR", cls: "mild-bear-pill" };
+        return { text: "STRONG BEAR", cls: "bearish-pill" };
+    }
+
+    function runAnalysis() {
+        const input = document.getElementById('target-date').value;
+        if (!input) return;
+        const targetDate = new Date(input + "T00:00:00");
+
+        const dayIndex = targetDate.getDay();
+        const vara = VARAS[dayIndex];
+
+        const eph = calculateEphemeris(targetDate);
+
+        const strip = document.getElementById('ephemeris-bar');
+        strip.innerHTML = `
+            <span class="strip-label">📅 ${vara.name} (${vara.lord})</span>
+            <div class="planet-node">☉ <span class="val">${eph.sun.sign}</span></div>
+            <div class="planet-node">☽ <span class="val">${eph.moon.sign}</span></div>
+            <div class="planet-node">♂ <span class="val">${eph.mars.sign}</span></div>
+            <div class="planet-node">☿ <span class="val">${eph.mercury.sign}</span></div>
+            <div class="planet-node">♃ <span class="val">${eph.jupiter.sign}</span></div>
+            <div class="planet-node">♄ <span class="val">${eph.saturn.sign}</span></div>
+            <div class="planet-node">☢ <span class="val">${eph.rahu.sign}</span></div>
+        `;
+
+        const analysis = evaluatePillars(eph, dayIndex);
+
+        const impactBox = document.getElementById('impact-box');
+        const impactHeader = document.getElementById('impact-header');
+        const impactList = document.getElementById('impact-events');
+
+        if (analysis.hasShock) {
+            impactBox.className = "impact-panel has-shock";
+            impactHeader.innerHTML = `<span style="color: var(--bearish);">⚠️ HIGH IMPACT ASTROLOGICAL FRICTION</span>`;
+        } else {
+            impactBox.className = "impact-panel";
+            impactHeader.innerHTML = `<span style="color: var(--accent);">✓ STABLE HARMONIC CONFIGURATION</span>`;
+        }
+
+        impactList.innerHTML = analysis.events.map(ev => `<li>${ev}</li>`).join('');
+
+        const cardData = [
+            { key: "gold", name: "🏆 Gold (XAU/MCX)", natal: "London Fix: Sep 12, 1919", data: analysis.scores.gold },
+            { key: "btc", name: "₿ Bitcoin (BTC)", natal: "Genesis Block: Jan 3, 2009", data: analysis.scores.btc },
+            { key: "oil", name: "🛢️ US Oil (WTI)", natal: "NYMEX: Mar 30, 1983", data: analysis.scores.oil },
+            { key: "nifty", name: "📊 Nifty 50 (NSE)", natal: "NSE Inception: Nov 3, 1994", data: analysis.scores.nifty }
+        ];
+
+        const grid = document.getElementById('asset-cards-grid');
+        grid.innerHTML = '';
+
+        cardData.forEach(item => {
+            const badge = getBiasBadge(item.data.score);
+            const scoreColor = item.data.score > 0 ? "var(--bullish)" : item.data.score < 0 ? "var(--bearish)" : "var(--neutral)";
+            const formattedScore = (item.data.score > 0 ? "+" : "") + item.data.score.toFixed(2);
+
+            const card = document.createElement('div');
+            card.className = "asset-card";
+            card.innerHTML = `
+                <div class="asset-top">
+                    <div>
+                        <div class="asset-title">${item.name}</div>
+                        <div class="asset-sub">${item.natal}</div>
+                    </div>
+                    <span class="bias-pill ${badge.cls}">${badge.text}</span>
+                </div>
+                <div class="score-bar">
+                    <span style="color: var(--text-muted); font-size: 0.75rem;">COMPOSITE SCORE</span>
+                    <span class="score-num" style="color: ${scoreColor}">${formattedScore}</span>
+                </div>
+                <div class="pillar-breakdown">
+                    <div class="pillar-box"><span class="pillar-label">P1: Dignity</span><span class="pillar-val">${item.data.p1 > 0 ? "+" : ""}${item.data.p1.toFixed(1)}</span></div>
+                    <div class="pillar-box"><span class="pillar-label">P2: Aspect</span><span class="pillar-val">${item.data.p2 > 0 ? "+" : ""}${item.data.p2.toFixed(1)}</span></div>
+                    <div class="pillar-box"><span class="pillar-label">P3: Angle</span><span class="pillar-val">${item.data.p3 > 0 ? "+" : ""}${item.data.p3.toFixed(1)}</span></div>
+                    <div class="pillar-box"><span class="pillar-label">P4: Vara</span><span class="pillar-val">${item.data.p4 > 0 ? "+" : ""}${item.data.p4.toFixed(1)}</span></div>
+                </div>
+                <div class="card-desc">${item.data.desc}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function shiftDate(days) {
+        const curr = new Date(document.getElementById('target-date').value + "T00:00:00");
+        curr.setDate(curr.getDate() + days);
+        document.getElementById('target-date').value = curr.toISOString().split('T')[0];
+        runAnalysis();
+    }
+
+    function resetToday() {
+        const today = new Date();
+        document.getElementById('target-date').value = today.toISOString().split('T')[0];
+        runAnalysis();
+    }
+
+    window.onload = () => {
+        resetToday();
+        calculateGannGrid();
+    };
+</script>
+
+</body>
+</html>
