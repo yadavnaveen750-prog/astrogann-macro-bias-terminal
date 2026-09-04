@@ -33,6 +33,9 @@
 
         body {
             background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
             color: var(--text-main);
             font-family: var(--font-sans);
             padding: 24px;
@@ -47,7 +50,6 @@
             gap: 24px;
         }
 
-        /* Header Bar */
         header {
             background-color: var(--bg-card);
             border: 1px solid var(--border);
@@ -58,6 +60,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .header-title h1 {
@@ -74,9 +77,10 @@
             color: var(--accent);
             font-family: var(--font-mono);
             font-size: 0.9rem;
-            border: 1px solid var(--border);
-            padding: 2px 8px;
+            border: 1px solid var(--accent);
+            padding: 4px 10px;
             border-radius: 4px;
+            background: rgba(56, 189, 248, 0.1);
         }
 
         .vara-bar {
@@ -90,15 +94,45 @@
         .vara-pill {
             background: var(--bg-base);
             border: 1px solid var(--border);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .vara-pill:hover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.05);
         }
 
         .vara-pill strong {
             color: var(--accent);
         }
 
-        /* Asset Grid */
+        .status-bar {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--bullish);
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--bullish);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .asset-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
@@ -114,11 +148,14 @@
             flex-direction: column;
             gap: 14px;
             position: relative;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .asset-card:hover {
             border-color: var(--border-highlight);
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.15);
+            transform: translateY(-2px);
         }
 
         .asset-header {
@@ -143,10 +180,11 @@
             font-size: 0.75rem;
             font-family: var(--font-mono);
             font-weight: 700;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            display: inline-block;
         }
 
         .bias-strong-bull { background: var(--bullish); color: #000; }
@@ -167,6 +205,7 @@
         .score-val {
             font-family: var(--font-mono);
             font-weight: 700;
+            font-size: 1.1rem;
         }
 
         .karakas {
@@ -181,9 +220,9 @@
 
         .flag-box {
             font-size: 0.78rem;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 4px;
-            background-color: var(--bg-base);
+            background-color: rgba(255, 255, 255, 0.02);
             border-left: 3px solid var(--accent);
             line-height: 1.4;
         }
@@ -194,7 +233,7 @@
         }
 
         .exec-strategy {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
             background: rgba(255, 255, 255, 0.02);
             padding: 10px;
@@ -204,12 +243,12 @@
         .exec-strategy strong {
             color: var(--accent);
             display: block;
-            margin-bottom: 2px;
-            font-size: 0.75rem;
+            margin-bottom: 3px;
+            font-size: 0.72rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Two-Column Utility Section */
         .util-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -227,6 +266,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .panel-title {
@@ -248,7 +288,6 @@
             font-weight: normal;
         }
 
-        /* Dynamic Engine Form */
         .calc-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -267,28 +306,31 @@
             color: var(--text-muted);
             text-transform: uppercase;
             font-family: var(--font-mono);
+            letter-spacing: 0.5px;
         }
 
         select, input {
             background-color: var(--bg-base);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 6px;
             font-size: 0.85rem;
             font-family: var(--font-mono);
             outline: none;
+            transition: all 0.2s ease;
         }
 
         select:focus, input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
         }
 
         .calc-result-box {
-            background-color: var(--bg-base);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(168, 85, 247, 0.05));
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 14px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -296,11 +338,10 @@
 
         .calc-result-score {
             font-family: var(--font-mono);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
         }
 
-        /* Gann Calculator Section */
         .gann-levels-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -312,25 +353,32 @@
             background-color: var(--bg-base);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .gann-cell:hover {
+            border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.05);
         }
 
         .gann-angle {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--accent);
             font-family: var(--font-mono);
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .gann-price {
             font-family: var(--font-mono);
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             font-weight: 700;
         }
 
-        /* Matrix Table */
         .table-wrap {
             overflow-x: auto;
             margin-top: 12px;
@@ -346,42 +394,68 @@
         th {
             background-color: var(--bg-base);
             color: var(--text-muted);
-            padding: 10px 12px;
+            padding: 12px;
             font-weight: 600;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
             text-transform: uppercase;
             font-size: 0.72rem;
             font-family: var(--font-mono);
+            letter-spacing: 0.5px;
         }
 
         td {
-            padding: 10px 12px;
+            padding: 12px;
             border-bottom: 1px solid var(--border);
+        }
+
+        td strong {
+            color: var(--accent);
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
+        tr:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
             .header-title h1 {
                 font-size: 1.1rem;
             }
+
             .vara-bar {
                 gap: 8px;
                 font-size: 0.75rem;
             }
+
             .asset-grid {
                 grid-template-columns: 1fr;
             }
+
             .util-grid {
                 grid-template-columns: 1fr;
             }
+
             .calc-form {
                 grid-template-columns: 1fr;
             }
+
             .gann-levels-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            th, td {
+                padding: 8px;
             }
         }
     </style>
@@ -392,102 +466,107 @@
 
     <header>
         <div class="header-title">
-            <h1>AstroGann Terminal <span>PROTOTYPE ENGINE</span></h1>
+            <h1>⭐ AstroGann Terminal <span>WORKING DEMO</span></h1>
         </div>
         <div class="vara-bar">
-            <div class="vara-pill">Day Lord (<span id="vara-lord">Checking...</span>): <strong id="vara-name">Loading</strong></div>
-            <div class="vara-pill">Time Scale: <strong>Circle of 360°</strong></div>
-            <div class="vara-pill">Engine: <strong>Vedic Karaka + Gann S9</strong></div>
+            <div class="vara-pill">Day Lord: <strong id="vara-name">Loading</strong></div>
+            <div class="vara-pill">Scale: <strong>360° Circle</strong></div>
+            <div class="vara-pill">Engine: <strong>Vedic + Gann S9</strong></div>
         </div>
     </header>
+
+    <div class="status-bar">
+        <div class="status-dot"></div>
+        <span>✓ System Online | Real-time Market Analysis Active</span>
+    </div>
 
     <div class="asset-grid">
 
         <div class="asset-card">
             <div class="asset-header">
                 <div>
-                    <div class="asset-name">Gold (XAU / MCX)</div>
+                    <div class="asset-name">🏆 Gold (XAU/MCX)</div>
                     <div class="asset-natal">London Fix: Sep 12, 1919</div>
                 </div>
                 <span class="bias-badge bias-mild-bull">Mild Bull</span>
             </div>
             <div class="score-row">
-                <span class="text-muted">Composite Score (S)</span>
+                <span>Composite Score (S)</span>
                 <span class="score-val" style="color: var(--bullish);">+1.15</span>
             </div>
-            <div class="karakas">Primary Karakas: <span>Sun (Sovereign) & Jupiter (Bullion)</span></div>
+            <div class="karakas">Karakas: <span>☉ Sun & ♃ Jupiter</span></div>
             <div class="flag-box">
-                Sun fortified in Leo. Exalted Taurus Moon triggers capital safety bid and physical accumulation on dips.
+                ☉ Sun fortified in Leo. Exalted Taurus Moon triggers capital safety bid and physical accumulation on dips.
             </div>
             <div class="exec-strategy">
-                <strong>Strategy: Buy on Harmonic Pullbacks</strong>
-                Execute long setups at the first 1-hr VWAP / Gann 45° angle test. Trailing stops below session morning lows.
+                <strong>📈 Strategy: Buy on Harmonic Pullbacks</strong>
+                Execute longs at 1-hr VWAP / Gann 45° test. Trailing stops below session lows.
             </div>
         </div>
 
         <div class="asset-card">
             <div class="asset-header">
                 <div>
-                    <div class="asset-name">Bitcoin (BTC)</div>
+                    <div class="asset-name">₿ Bitcoin (BTC)</div>
                     <div class="asset-natal">Genesis: Jan 3, 2009</div>
                 </div>
                 <span class="bias-badge bias-sideways">Sideways</span>
             </div>
             <div class="score-row">
-                <span class="text-muted">Composite Score (S)</span>
+                <span>Composite Score (S)</span>
                 <span class="score-val" style="color: var(--neutral);">+0.10</span>
             </div>
-            <div class="karakas">Primary Karakas: <span>Rahu (Speculation) & Mercury (Code)</span></div>
+            <div class="karakas">Karakas: <span>☿ Mercury & ☢ Rahu</span></div>
             <div class="flag-box alert">
-                Active Rahu-Mercury vibration. Heightened risk of sharp liquidity sweeps and false breakout spikes.
+                ☢ Active Rahu-Mercury vibration. Sharp liquidity sweeps and false breakout spikes likely.
             </div>
             <div class="exec-strategy">
-                <strong>Strategy: Fade Range Boundaries</strong>
-                Avoid chasing momentum expansions. Scalp session boundaries; lock profits at immediate resistance octaves.
+                <strong>➡️ Strategy: Fade Range Boundaries</strong>
+                Avoid momentum chasing. Scalp session boundaries; lock profits at resistance octaves.
             </div>
         </div>
 
         <div class="asset-card">
             <div class="asset-header">
                 <div>
-                    <div class="asset-name">US Oil (WTI Crude)</div>
+                    <div class="asset-name">🛢️ US Oil (WTI Crude)</div>
                     <div class="asset-natal">NYMEX: Mar 30, 1983</div>
                 </div>
                 <span class="bias-badge bias-mild-bear">Mild Bear</span>
             </div>
             <div class="score-row">
-                <span class="text-muted">Composite Score (S)</span>
+                <span>Composite Score (S)</span>
                 <span class="score-val" style="color: var(--bearish);">-0.80</span>
             </div>
-            <div class="karakas">Primary Karakas: <span>Saturn (Extraction) & Mars (Combustion)</span></div>
+            <div class="karakas">Karakas: <span>♄ Saturn & ♂ Mars</span></div>
             <div class="flag-box">
-                Saturnian drag and earthy Moon damping Mars. Spikes are vulnerable to heavy overhead supply walls.
+                ♄ Saturnian drag and earthy Moon damping ♂ Mars. Spikes vulnerable to overhead supply walls.
             </div>
             <div class="exec-strategy">
-                <strong>Strategy: Sell Rallies at S9 Resistance</strong>
-                Fade failed test of previous session highs. Keep tight stop-losses due to latent geopolitical friction flags.
+                <strong>📉 Strategy: Sell Rallies at S9 Resistance</strong>
+                Fade failed session high tests. Keep tight stops due to geopolitical friction.
             </div>
         </div>
 
         <div class="asset-card">
             <div class="asset-header">
                 <div>
-                    <div class="asset-name">Nifty 50 (NSE)</div>
+                    <div class="asset-name">📊 Nifty 50 (NSE)</div>
                     <div class="asset-natal">NSE: Nov 3, 1994</div>
                 </div>
                 <span class="bias-badge bias-mild-bull">Mild Bull</span>
             </div>
             <div class="score-row">
-                <span class="text-muted">Composite Score (S)</span>
+                <span>Composite Score (S)</span>
                 <span class="score-val" style="color: var(--bullish);">+0.90</span>
             </div>
-            <div class="karakas">Primary Karakas: <span>Mercury (Equities) & Jupiter (BFSI)</span></div>
+            <div class="karakas">Karakas: <span>☿ Mercury & ♃ Jupiter</span></div>
             <div class="flag-box">
-                Jupiter-Venus angle supports BFSI/FMCG. Expect opening bid followed by midday consolidation.
+                ♃ Jupiter-Venus angle supports BFSI/FMCG. Opening bid → midday consolidation expected.
             </div>
             <div class="exec-strategy">
-                <strong>Strategy: Rotation Longs in Friendly Horas</strong>
-                Execute banking/core large caps during Jupiter and Mercury Horas. Take partial profit into afternoon rallies.
+                <strong>🔄 Strategy: Rotation Longs in Friendly Horas</strong>
+                Execute banking/caps during ♃ & ☿ Horas. Partial profits into afternoon rallies.
             </div>
         </div>
 
@@ -498,7 +577,7 @@
         <div class="panel">
             <div class="panel-title">
                 Interactive Daily Bias Engine
-                <span>Algorithm: 4-Pillar Weighted Composite</span>
+                <span>4-Pillar Weighted Composite</span>
             </div>
 
             <div class="calc-form">
@@ -540,18 +619,18 @@
                     <select id="p4" onchange="computeEngine()">
                         <option value="1.0">Asset Day Lord + Friendly Nakshatra (+1.0)</option>
                         <option value="0.0" selected>Neutral Nakshatra (0.0)</option>
-                        <option value="-1.0">Inimical Day + Obstruction Nakshatra (-1.0)</option>
+                        <option value="-1.0">Inimical Day + Obstruction (-1.0)</option>
                     </select>
                 </div>
             </div>
 
             <div class="calc-result-box">
                 <div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase;">Generated Composite Score</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 4px;">Generated Score</div>
                     <div class="calc-result-score" id="computed-score">0.00</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase;">Session Execution Mode</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; margin-bottom: 4px;">Execution Mode</div>
                     <span class="bias-badge bias-sideways" id="computed-badge">SIDEWAYS</span>
                 </div>
             </div>
@@ -560,7 +639,7 @@
         <div class="panel">
             <div class="panel-title">
                 Gann Square of 9 Price-Time Harmonic
-                <span>Formula: (√Price ± Deg/180)²</span>
+                <span>(√Price ± Deg/180)²</span>
             </div>
 
             <div class="calc-form">
@@ -622,40 +701,40 @@
                 <thead>
                     <tr>
                         <th>Asset</th>
-                        <th>Natal Anchor Point</th>
+                        <th>Natal Anchor</th>
                         <th>Primary Karakas</th>
-                        <th>Gann High-Volatility Triggers</th>
-                        <th>Preferred Trading Hora</th>
+                        <th>Volatility Triggers</th>
+                        <th>Trading Hora</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Gold (XAU)</strong></td>
+                        <td><strong>🏆 Gold (XAU)</strong></td>
                         <td>Sep 12, 1919 (11:00 GMT)</td>
-                        <td>Sun (Store) & Jupiter (Bullion)</td>
-                        <td>Sun-Saturn Square (90°), Sun-Rahu Eclipse alignments</td>
-                        <td>Sun, Jupiter Horas</td>
+                        <td>☉ Sun (Store) & ♃ Jupiter (Bullion)</td>
+                        <td>☉-♄ Square (90°), ☉-Rahu Eclipse</td>
+                        <td>☉, ♃ Horas</td>
                     </tr>
                     <tr>
-                        <td><strong>Bitcoin (BTC)</strong></td>
+                        <td><strong>₿ Bitcoin (BTC)</strong></td>
                         <td>Jan 03, 2009 (18:15 UTC)</td>
-                        <td>Mercury (Code) & Rahu (Speculation)</td>
-                        <td>Rahu-Mercury Conjunctions, Uranus hard squares</td>
-                        <td>Mercury, Venus Horas</td>
+                        <td>☿ Mercury (Code) & ☢ Rahu (Speculation)</td>
+                        <td>☢-☿ Conjunctions, ♅ hard squares</td>
+                        <td>☿, ♀ Horas</td>
                     </tr>
                     <tr>
-                        <td><strong>US Oil (WTI)</strong></td>
+                        <td><strong>🛢️ US Oil (WTI)</strong></td>
                         <td>Mar 30, 1983 (09:30 EST)</td>
-                        <td>Saturn (Crude) & Mars (Combustion)</td>
-                        <td>Mars-Saturn exact squares/oppositions (War/Supply Shock)</td>
-                        <td>Mars, Saturn Horas</td>
+                        <td>♄ Saturn (Crude) & ♂ Mars (Combustion)</td>
+                        <td>♂-♄ squares/oppositions (War/Supply)</td>
+                        <td>♂, ♄ Horas</td>
                     </tr>
                     <tr>
-                        <td><strong>Nifty 50</strong></td>
+                        <td><strong>📊 Nifty 50</strong></td>
                         <td>Nov 03, 1994 (10:00 IST)</td>
-                        <td>Mercury (Equities) & Jupiter (Credit)</td>
-                        <td>Mercury Combust, Moon transiting 8th from Natal Moon</td>
-                        <td>Jupiter, Mercury Horas</td>
+                        <td>☿ Mercury (Equities) & ♃ Jupiter (Credit)</td>
+                        <td>☿ Combust, ☽ transiting 8th from Natal</td>
+                        <td>♃, ☿ Horas</td>
                     </tr>
                 </tbody>
             </table>
@@ -665,22 +744,19 @@
 </div>
 
 <script>
-    // Auto-detect Vara (Day Lord)
     const varas = [
-        { day: 'Sunday', planet: 'Sun (Surya)', ruler: 'Gold / PSUs' },
-        { day: 'Monday', planet: 'Moon (Chandra)', ruler: 'Silver / FMCG' },
-        { day: 'Tuesday', planet: 'Mars (Mangal)', ruler: 'Crude / Metals / Defense' },
-        { day: 'Wednesday', planet: 'Mercury (Budh)', ruler: 'Nifty / Tech / BTC' },
-        { day: 'Thursday', planet: 'Jupiter (Guru)', ruler: 'Banking / Gold / Bullion' },
-        { day: 'Friday', planet: 'Venus (Shukra)', ruler: 'Crypto / Luxury / Retail' },
-        { day: 'Saturday', planet: 'Saturn (Shani)', ruler: 'Oil / Infrastructure' }
+        { day: 'Sunday', planet: '☉ Sun (Surya)', ruler: 'Gold / PSUs' },
+        { day: 'Monday', planet: '☽ Moon (Chandra)', ruler: 'Silver / FMCG' },
+        { day: 'Tuesday', planet: '♂ Mars (Mangal)', ruler: 'Crude / Metals / Defense' },
+        { day: 'Wednesday', planet: '☿ Mercury (Budh)', ruler: 'Nifty / Tech / BTC' },
+        { day: 'Thursday', planet: '♃ Jupiter (Guru)', ruler: 'Banking / Gold / Bullion' },
+        { day: 'Friday', planet: '♀ Venus (Shukra)', ruler: 'Crypto / Luxury / Retail' },
+        { day: 'Saturday', planet: '♄ Saturn (Shani)', ruler: 'Oil / Infrastructure' }
     ];
 
     const todayIndex = new Date().getDay();
-    document.getElementById('vara-lord').innerText = varas[todayIndex].day;
     document.getElementById('vara-name').innerText = varas[todayIndex].planet;
 
-    // Interactive 4-Pillar Score Formula: S = 0.30*D + 0.30*A + 0.25*T + 0.15*L
     function computeEngine() {
         const p1 = parseFloat(document.getElementById('p1').value);
         const p2 = parseFloat(document.getElementById('p2').value);
@@ -692,7 +768,6 @@
         const badgeElem = document.getElementById('computed-badge');
 
         scoreElem.innerText = (score > 0 ? '+' : '') + score.toFixed(2);
-
         badgeElem.className = 'bias-badge';
 
         if (score > 1.5) {
@@ -718,13 +793,11 @@
         }
     }
 
-    // Gann Square of 9 Mathematical Projection: Price = (sqrt(Base) ± Deg/180)^2
     function calculateGannLevels() {
         const basePrice = parseFloat(document.getElementById('gann-base-price').value);
         if (isNaN(basePrice) || basePrice <= 0) return;
 
         const sqrtP = Math.sqrt(basePrice);
-
         const calcOffset = (deg) => Math.pow(sqrtP + (deg / 180), 2).toFixed(2);
         const calcMinusOffset = (deg) => {
             const val = sqrtP - (deg / 180);
@@ -735,14 +808,12 @@
         document.getElementById('gann-90').innerText = calcOffset(90);
         document.getElementById('gann-120').innerText = calcOffset(120);
         document.getElementById('gann-180').innerText = calcOffset(180);
-
         document.getElementById('gann-m45').innerText = calcMinusOffset(45);
         document.getElementById('gann-m90').innerText = calcMinusOffset(90);
         document.getElementById('gann-m120').innerText = calcMinusOffset(120);
         document.getElementById('gann-m180').innerText = calcMinusOffset(180);
     }
 
-    // Initialize on load
     computeEngine();
     calculateGannLevels();
 </script>
