@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroGann Macro Bias Terminal</title>
+    <style>
+        :root {
+            --bg-base: #0a0d14;
+            --bg-card: #121722;
+            --bg-card-hover: #171e2c;
+            --border: #232c3d;
+            --border-highlight: #3a475e;
+            --text-main: #e2e8f0;
+            --text-muted: #8b9bb4;
+            --bullish: #10b981;
+            --bullish-dim: rgba(16, 185, 129, 0.15);
+            --bearish: #f43f5e;
+            --bearish-dim: rgba(244, 63, 94, 0.15);
+            --neutral: #eab308;
+            --neutral-dim: rgba(234, 179, 8, 0.15);
+            --accent: #38bdf8;
+            --accent-purple: #a855f7;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            padding: 24px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Header Bar */
+        header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title h1 span {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .vara-bar {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            flex-wrap: wrap;
+        }
+
+        .vara-pill {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .vara-pill strong {
+            color: var(--accent);
+        }
+
+        /* Asset Grid */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 18px;
+        }
+
+        .asset-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            transition: border-color 0.2s ease;
+        }
+
+        .asset-card:hover {
+            border-color: var(--border-highlight);
+        }
+
+        .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .asset-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .asset-natal {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .bias-badge {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .bias-strong-bull { background: var(--bullish); color: #000; }
+        .bias-mild-bull { background: var(--bullish-dim); color: var(--bullish); border: 1px solid var(--bullish); }
+        .bias-sideways { background: var(--neutral-dim); color: var(--neutral); border: 1px solid var(--neutral); }
+        .bias-mild-bear { background: var(--bearish-dim); color: var(--bearish); border: 1px solid var(--bearish); }
+        .bias-strong-bear { background: var(--bearish); color: #fff; }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 8px;
+        }
+
+        .score-val {
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .karakas {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .karakas span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .flag-box {
+            font-size: 0.78rem;
+            padding: 8px 10px;
+            border-radius: 4px;
+            background-color: var(--bg-base);
+            border-left: 3px solid var(--accent);
+            line-height: 1.4;
+        }
+
+        .flag-box.alert {
+            border-left-color: var(--bearish);
+            color: #fca5a5;
+        }
+
+        .exec-strategy {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .exec-strategy strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* Two-Column Utility Section */
+        .util-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 992px) {
+            .util-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .panel-title span {
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        /* Dynamic Engine Form */
+        .calc-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        select, input {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent);
+        }
+
+        .calc-result-box {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-result-score {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Gann Calculator Section */
+        .gann-levels-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .gann-cell {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .gann-angle {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .gann-price {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        /* Matrix Table */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-base);
+            color: var(--text-muted);
+            padding: 10px 12px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-title h1 {
+                font-size: 1.1rem;
+            }
+            .vara-bar {
+                gap: 8px;
+                font-size: 0.75rem;
+            }
+            .asset-grid {
+                grid-template-columns: 1fr;
+            }
+            .util-grid {
+                grid-template-columns: 1fr;
+            }
+            .calc-form {
+                grid-template-columns: 1fr;
+            }
+            .gann-levels-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <div class="header-title">
+            <h1>AstroGann Terminal <span>PROTOTYPE ENGINE</span></h1>
+        </div>
+        <div class="vara-bar">
+            <div class="vara-pill">Day Lord (<span id="vara-lord">Checking...</span>): <strong id="vara-name">Loading</strong></div>
+            <div class="vara-pill">Time Scale: <strong>Circle of 360°</strong></div>
+            <div class="vara-pill">Engine: <strong>Vedic Karaka + Gann S9</strong></div>
+        </div>
+    </header>
+
+    <div class="asset-grid">
+
+        <div class="asset-card">
+            <div class="asset-header">
+                <div>
+                    <div class="asset-name">Gold (XAU / MCX)</div>
+                    <div class="asset-natal">London Fix: Sep 12, 1919</div>
+                </div>
+                <span class="bias-badge bias-mild-bull">Mild Bull</span>
+            </div>
+            <div class="score-row">
+                <span class="text-muted">Composite Score (S)</span>
+                <span class="score-val" style="color: var(--bullish);">+1.15</span>
+            </div>
+            <div class="karakas">Primary Karakas: <span>Sun (Sovereign) & Jupiter (Bullion)</span></div>
+            <div class="flag-box">
+                Sun fortified in Leo. Exalted Taurus Moon triggers capital safety bid and physical accumulation on dips.
+            </div>
+            <div class="exec-strategy">
+                <strong>Strategy: Buy on Harmonic Pullbacks</strong>
+                Execute long setups at the first 1-hr VWAP / Gann 45° angle test. Trailing stops below session morning lows.
+            </div>
+        </div>
+
+        <div class="asset-card">
+            <div class="asset-header">
+                <div>
+                    <div class="asset-name">Bitcoin (BTC)</div>
+                    <div class="asset-natal">Genesis: Jan 3, 2009</div>
+                </div>
+                <span class="bias-badge bias-sideways">Sideways</span>
+            </div>
+            <div class="score-row">
+                <span class="text-muted">Composite Score (S)</span>
+                <span class="score-val" style="color: var(--neutral);">+0.10</span>
+            </div>
+            <div class="karakas">Primary Karakas: <span>Rahu (Speculation) & Mercury (Code)</span></div>
+            <div class="flag-box alert">
+                Active Rahu-Mercury vibration. Heightened risk of sharp liquidity sweeps and false breakout spikes.
+            </div>
+            <div class="exec-strategy">
+                <strong>Strategy: Fade Range Boundaries</strong>
+                Avoid chasing momentum expansions. Scalp session boundaries; lock profits at immediate resistance octaves.
+            </div>
+        </div>
+
+        <div class="asset-card">
+            <div class="asset-header">
+                <div>
+                    <div class="asset-name">US Oil (WTI Crude)</div>
+                    <div class="asset-natal">NYMEX: Mar 30, 1983</div>
+                </div>
+                <span class="bias-badge bias-mild-bear">Mild Bear</span>
+            </div>
+            <div class="score-row">
+                <span class="text-muted">Composite Score (S)</span>
+                <span class="score-val" style="color: var(--bearish);">-0.80</span>
+            </div>
+            <div class="karakas">Primary Karakas: <span>Saturn (Extraction) & Mars (Combustion)</span></div>
+            <div class="flag-box">
+                Saturnian drag and earthy Moon damping Mars. Spikes are vulnerable to heavy overhead supply walls.
+            </div>
+            <div class="exec-strategy">
+                <strong>Strategy: Sell Rallies at S9 Resistance</strong>
+                Fade failed test of previous session highs. Keep tight stop-losses due to latent geopolitical friction flags.
+            </div>
+        </div>
+
+        <div class="asset-card">
+            <div class="asset-header">
+                <div>
+                    <div class="asset-name">Nifty 50 (NSE)</div>
+                    <div class="asset-natal">NSE: Nov 3, 1994</div>
+                </div>
+                <span class="bias-badge bias-mild-bull">Mild Bull</span>
+            </div>
+            <div class="score-row">
+                <span class="text-muted">Composite Score (S)</span>
+                <span class="score-val" style="color: var(--bullish);">+0.90</span>
+            </div>
+            <div class="karakas">Primary Karakas: <span>Mercury (Equities) & Jupiter (BFSI)</span></div>
+            <div class="flag-box">
+                Jupiter-Venus angle supports BFSI/FMCG. Expect opening bid followed by midday consolidation.
+            </div>
+            <div class="exec-strategy">
+                <strong>Strategy: Rotation Longs in Friendly Horas</strong>
+                Execute banking/core large caps during Jupiter and Mercury Horas. Take partial profit into afternoon rallies.
+            </div>
+        </div>
+
+    </div>
+
+    <div class="util-grid">
+
+        <div class="panel">
+            <div class="panel-title">
+                Interactive Daily Bias Engine
+                <span>Algorithm: 4-Pillar Weighted Composite</span>
+            </div>
+
+            <div class="calc-form">
+                <div class="input-group">
+                    <label>Pillar 1: Ruler Dignity (30%)</label>
+                    <select id="p1" onchange="computeEngine()">
+                        <option value="2.0">Exalted / Own Sign (+2.0)</option>
+                        <option value="1.0">Friendly Sign (+1.0)</option>
+                        <option value="0.0" selected>Neutral Sign (0.0)</option>
+                        <option value="-1.0">Enemy Sign (-1.0)</option>
+                        <option value="-2.0">Debilitated / Combust (-2.0)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Pillar 2: Gann Aspect (30%)</label>
+                    <select id="p2" onchange="computeEngine()">
+                        <option value="1.5">Trine 120° / Sextile 60° (+1.5)</option>
+                        <option value="0.5">Conjunction - Benefic (+0.5)</option>
+                        <option value="0.0" selected>No Major Aspect (0.0)</option>
+                        <option value="-1.0">Semisquare 45° (-1.0)</option>
+                        <option value="-2.0">Square 90° / Opposition 180° (-2.0)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Pillar 3: Natal Angle (25%)</label>
+                    <select id="p3" onchange="computeEngine()">
+                        <option value="2.0">Kendra / Trikona Favorable (+2.0)</option>
+                        <option value="0.5">Mildly Supportive (+0.5)</option>
+                        <option value="0.0" selected>Neutral Aspect (0.0)</option>
+                        <option value="-1.5">Dusthana 6th/8th/12th (-1.5)</option>
+                        <option value="-2.0">Hard Affliction to Lagna (-2.0)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Pillar 4: Day & Nakshatra (15%)</label>
+                    <select id="p4" onchange="computeEngine()">
+                        <option value="1.0">Asset Day Lord + Friendly Nakshatra (+1.0)</option>
+                        <option value="0.0" selected>Neutral Nakshatra (0.0)</option>
+                        <option value="-1.0">Inimical Day + Obstruction Nakshatra (-1.0)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="calc-result-box">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase;">Generated Composite Score</div>
+                    <div class="calc-result-score" id="computed-score">0.00</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase;">Session Execution Mode</div>
+                    <span class="bias-badge bias-sideways" id="computed-badge">SIDEWAYS</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                Gann Square of 9 Price-Time Harmonic
+                <span>Formula: (√Price ± Deg/180)²</span>
+            </div>
+
+            <div class="calc-form">
+                <div class="input-group">
+                    <label>Active Reference Price</label>
+                    <input type="number" id="gann-base-price" value="2650" step="any" oninput="calculateGannLevels()">
+                </div>
+                <div class="input-group">
+                    <label>Planetary Longitude (°)</label>
+                    <input type="number" id="planet-degree" value="75" min="0" max="360" oninput="calculateGannLevels()">
+                </div>
+            </div>
+
+            <div class="gann-levels-grid">
+                <div class="gann-cell">
+                    <span class="gann-angle">+45° Harmonic</span>
+                    <span class="gann-price" id="gann-45">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">+90° Square</span>
+                    <span class="gann-price" id="gann-90">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">+120° Trine</span>
+                    <span class="gann-price" id="gann-120">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">+180° Opposition</span>
+                    <span class="gann-price" id="gann-180">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">-45° Harmonic</span>
+                    <span class="gann-price" id="gann-m45">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">-90° Square</span>
+                    <span class="gann-price" id="gann-m90">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">-120° Trine</span>
+                    <span class="gann-price" id="gann-m120">0.00</span>
+                </div>
+                <div class="gann-cell">
+                    <span class="gann-angle">-180° Opposition</span>
+                    <span class="gann-price" id="gann-m180">0.00</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">
+            Systemic Matrix Reference
+            <span>Permanent Asset Mapping</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Natal Anchor Point</th>
+                        <th>Primary Karakas</th>
+                        <th>Gann High-Volatility Triggers</th>
+                        <th>Preferred Trading Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gold (XAU)</strong></td>
+                        <td>Sep 12, 1919 (11:00 GMT)</td>
+                        <td>Sun (Store) & Jupiter (Bullion)</td>
+                        <td>Sun-Saturn Square (90°), Sun-Rahu Eclipse alignments</td>
+                        <td>Sun, Jupiter Horas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bitcoin (BTC)</strong></td>
+                        <td>Jan 03, 2009 (18:15 UTC)</td>
+                        <td>Mercury (Code) & Rahu (Speculation)</td>
+                        <td>Rahu-Mercury Conjunctions, Uranus hard squares</td>
+                        <td>Mercury, Venus Horas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>US Oil (WTI)</strong></td>
+                        <td>Mar 30, 1983 (09:30 EST)</td>
+                        <td>Saturn (Crude) & Mars (Combustion)</td>
+                        <td>Mars-Saturn exact squares/oppositions (War/Supply Shock)</td>
+                        <td>Mars, Saturn Horas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nifty 50</strong></td>
+                        <td>Nov 03, 1994 (10:00 IST)</td>
+                        <td>Mercury (Equities) & Jupiter (Credit)</td>
+                        <td>Mercury Combust, Moon transiting 8th from Natal Moon</td>
+                        <td>Jupiter, Mercury Horas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Auto-detect Vara (Day Lord)
+    const varas = [
+        { day: 'Sunday', planet: 'Sun (Surya)', ruler: 'Gold / PSUs' },
+        { day: 'Monday', planet: 'Moon (Chandra)', ruler: 'Silver / FMCG' },
+        { day: 'Tuesday', planet: 'Mars (Mangal)', ruler: 'Crude / Metals / Defense' },
+        { day: 'Wednesday', planet: 'Mercury (Budh)', ruler: 'Nifty / Tech / BTC' },
+        { day: 'Thursday', planet: 'Jupiter (Guru)', ruler: 'Banking / Gold / Bullion' },
+        { day: 'Friday', planet: 'Venus (Shukra)', ruler: 'Crypto / Luxury / Retail' },
+        { day: 'Saturday', planet: 'Saturn (Shani)', ruler: 'Oil / Infrastructure' }
+    ];
+
+    const todayIndex = new Date().getDay();
+    document.getElementById('vara-lord').innerText = varas[todayIndex].day;
+    document.getElementById('vara-name').innerText = varas[todayIndex].planet;
+
+    // Interactive 4-Pillar Score Formula: S = 0.30*D + 0.30*A + 0.25*T + 0.15*L
+    function computeEngine() {
+        const p1 = parseFloat(document.getElementById('p1').value);
+        const p2 = parseFloat(document.getElementById('p2').value);
+        const p3 = parseFloat(document.getElementById('p3').value);
+        const p4 = parseFloat(document.getElementById('p4').value);
+
+        const score = (0.30 * p1) + (0.30 * p2) + (0.25 * p3) + (0.15 * p4);
+        const scoreElem = document.getElementById('computed-score');
+        const badgeElem = document.getElementById('computed-badge');
+
+        scoreElem.innerText = (score > 0 ? '+' : '') + score.toFixed(2);
+
+        badgeElem.className = 'bias-badge';
+
+        if (score > 1.5) {
+            badgeElem.innerText = 'STRONG BULL';
+            badgeElem.classList.add('bias-strong-bull');
+            scoreElem.style.color = 'var(--bullish)';
+        } else if (score >= 0.5) {
+            badgeElem.innerText = 'MILD BULL';
+            badgeElem.classList.add('bias-mild-bull');
+            scoreElem.style.color = 'var(--bullish)';
+        } else if (score > -0.5) {
+            badgeElem.innerText = 'SIDEWAYS';
+            badgeElem.classList.add('bias-sideways');
+            scoreElem.style.color = 'var(--neutral)';
+        } else if (score >= -1.5) {
+            badgeElem.innerText = 'MILD BEAR';
+            badgeElem.classList.add('bias-mild-bear');
+            scoreElem.style.color = 'var(--bearish)';
+        } else {
+            badgeElem.innerText = 'STRONG BEAR';
+            badgeElem.classList.add('bias-strong-bear');
+            scoreElem.style.color = 'var(--bearish)';
+        }
+    }
+
+    // Gann Square of 9 Mathematical Projection: Price = (sqrt(Base) ± Deg/180)^2
+    function calculateGannLevels() {
+        const basePrice = parseFloat(document.getElementById('gann-base-price').value);
+        if (isNaN(basePrice) || basePrice <= 0) return;
+
+        const sqrtP = Math.sqrt(basePrice);
+
+        const calcOffset = (deg) => Math.pow(sqrtP + (deg / 180), 2).toFixed(2);
+        const calcMinusOffset = (deg) => {
+            const val = sqrtP - (deg / 180);
+            return val > 0 ? Math.pow(val, 2).toFixed(2) : "0.00";
+        };
+
+        document.getElementById('gann-45').innerText = calcOffset(45);
+        document.getElementById('gann-90').innerText = calcOffset(90);
+        document.getElementById('gann-120').innerText = calcOffset(120);
+        document.getElementById('gann-180').innerText = calcOffset(180);
+
+        document.getElementById('gann-m45').innerText = calcMinusOffset(45);
+        document.getElementById('gann-m90').innerText = calcMinusOffset(90);
+        document.getElementById('gann-m120').innerText = calcMinusOffset(120);
+        document.getElementById('gann-m180').innerText = calcMinusOffset(180);
+    }
+
+    // Initialize on load
+    computeEngine();
+    calculateGannLevels();
+</script>
+
+</body>
+</html>
